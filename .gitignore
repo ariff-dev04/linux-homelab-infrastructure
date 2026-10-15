@@ -1,0 +1,9 @@
+# Ignore secret environment variables (PASSWORDS!)
+.env
+*.env
+# Ignore live Docker volume data & databases
+**/etc-pihole/
+**/etc-dnsmasq.d/
+**/uptime-kuma-data/
+*.db
+*.log
