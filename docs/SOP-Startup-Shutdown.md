@@ -8,7 +8,7 @@
    ```
 3. Connect via SSH:
    ```powershell
-   ssh arifflabs@192.168.1.62
+   ssh <your-username>@192.168.1.62
    ```
 4. Audit system load and container states:
    ```bash
