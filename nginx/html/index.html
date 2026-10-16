@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Muhammad 'Ariff | SysAdmin & Cloud Homelab</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen">
+  <div class="max-w-4xl mx-auto px-6 py-12">
+    <!-- Hero Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-8">
+      <div>
+        <span class="text-xs font-mono uppercase tracking-widest text-sky-400 bg-sky-950/60 border border-sky-800 px-3 py-1 rounded-full">Bare-Metal Ubuntu 24.04 LTS • 192.168.1.62</span>
+        <h1 class="text-4xl font-bold mt-4 text-white">Muhammad 'Ariff</h1>
+        <p class="text-slate-400 mt-1">Aspiring Systems Administrator & DevOps / Cloud Engineer</p>
+      </div>
+      <a href="https://github.com/ariff-dev04/linux-homelab-infrastructure" target="_blank" class="mt-4 md:mt-0 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold px-5 py-2.5 rounded-lg transition">
+        View GitHub IaC Repo →
+      </a>
+    </div>
+
+    <!-- Active Services Grid -->
+    <h2 class="text-xl font-semibold mt-10 mb-4 text-slate-200">🟢 Live Containerized Infrastructure</h2>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-sky-500/50 transition">
+        <div class="flex justify-between items-center">
+          <h3 class="font-bold text-lg text-white">Pi-hole v6 DNS Sinkhole</h3>
+          <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs px-2.5 py-1 rounded-full font-mono">PORT 53 / 8080</span>
+        </div>
+        <p class="text-slate-400 text-sm mt-2">Network-wide recursive DNS forwarder & ad-blocking sinkhole deployed via Docker Compose.</p>
+        <a href="http://192.168.1.62:8080/admin" target="_blank" class="inline-block mt-4 text-sky-400 text-sm font-semibold hover:underline">Open Admin Console →</a>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-sky-500/50 transition">
+        <div class="flex justify-between items-center">
+          <h3 class="font-bold text-lg text-white">NGINX Alpine Web Server</h3>
+          <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs px-2.5 py-1 rounded-full font-mono">PORT 80</span>
+        </div>
+        <p class="text-slate-400 text-sm mt-2">Hardened read-only bind-mounted static web server hosting portfolio & service telemetry.</p>
+        <span class="inline-block mt-4 text-emerald-400 text-sm font-mono">HTTP/1.1 200 OK</span>
+      </div>
+    </div>
+
+    <!-- Core Competencies -->
+    <h2 class="text-xl font-semibold mt-10 mb-4 text-slate-200">🛠️ Core Technical Stack</h2>
+    <div class="flex flex-wrap gap-2">
+      <span class="bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg text-sm text-slate-300">Linux CLI (Ubuntu 24.04)</span>
+      <span class="bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg text-sm text-slate-300">Docker & Compose V2</span>
+      <span class="bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg text-sm text-slate-300">DNS & TCP/IP Networking</span>
+      <span class="bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg text-sm text-slate-300">NGINX Web Hosting</span>
+      <span class="bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg text-sm text-slate-300">Git & Infrastructure as Code</span>
+      <span class="bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg text-sm text-slate-300">systemd & Socket Diagnostics</span>
+    </div>
+  </div>
+</body>
+</html>
