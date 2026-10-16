@@ -15,3 +15,8 @@ Bare-metal Ubuntu Server 24.04 LTS homelab deploying containerized network and i
 - **Service:** Lightweight Alpine-based NGINX HTTP server hosting custom portfolio & homelab dashboard.
 - **Ports:** `80/tcp` (HTTP)
 - **Security:** Configured container volume bind-mount with `:ro` (Read-Only) flag to prevent container-to-host file tampering.
+
+## Phase 2.3: Enterprise Service & Network Monitoring (`uptime-kuma:2`)
+- **Service:** Uptime Kuma v2 monitoring HTTP, DNS, ICMP latency, and Docker container states.
+- **Ports:** `3001/tcp` (Web Dashboard)
+- **Integration:** Mounted `/var/run/docker.sock:ro` for read-only container health inspection and configured custom local DNS A-records (`ariff.lab`, `status.ariff.lab`) in Pi-hole.
