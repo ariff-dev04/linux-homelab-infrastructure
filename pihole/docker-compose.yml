@@ -11,6 +11,9 @@ services:
       FTLCONF_webserver_api_password: ${WEBPASSWORD}
       FTLCONF_dns_listeningMode: all
       FTLCONF_dns_upstreams: 1.1.1.1;8.8.8.8
+      FTLCONF_dns_hosts: |-
+        192.168.1.62 ariff.lab
+        192.168.1.62 status.ariff.lab
     volumes:
       - ./etc-pihole:/etc/pihole
     restart: unless-stopped
