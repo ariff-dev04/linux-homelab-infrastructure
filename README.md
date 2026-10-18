@@ -20,3 +20,7 @@ Bare-metal Ubuntu Server 24.04 LTS homelab deploying containerized network and i
 - **Service:** Uptime Kuma v2 monitoring HTTP, DNS, ICMP latency, and Docker container states.
 - **Ports:** `3001/tcp` (Web Dashboard)
 - **Integration:** Mounted `/var/run/docker.sock:ro` for read-only container health inspection and configured custom local DNS A-records (`ariff.lab`, `status.ariff.lab`) in Pi-hole.
+
+## Phase 3.1: Host Security Hardening (UFW & OpenSSH)
+- **Firewall (`ufw`):** Enforced default-deny ingress policy allowing only active service ports (`22`, `53`, `80`, `8080`, `3001`).
+- **SSH Hardening:** Configured `ed25519` key-based authentication and disabled root/password logins via `/etc/ssh/sshd_config.d/01-homelab-hardening.conf` (overriding `50-cloud-init.conf` first-match precedence).
