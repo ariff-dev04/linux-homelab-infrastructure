@@ -11,7 +11,10 @@
     <!-- Hero Header -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-8">
       <div>
-        <span class="text-xs font-mono uppercase tracking-widest text-sky-400 bg-sky-950/60 border border-sky-800 px-3 py-1 rounded-full">Bare-Metal Ubuntu 24.04 LTS • ariff.lab (192.168.1.62)</span>
+        <div class="flex flex-wrap gap-2">
+          <span class="text-xs font-mono uppercase tracking-widest text-sky-400 bg-sky-950/60 border border-sky-800 px-3 py-1 rounded-full">Bare-Metal Ubuntu 24.04 LTS • ariff.lab</span>
+          <span class="text-xs font-mono uppercase tracking-widest text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-3 py-1 rounded-full">🛡️ CIS Hardened • UFW + Ed25519 SSH</span>
+        </div>
         <h1 class="text-4xl font-bold mt-4 text-white">Muhammad 'Ariff</h1>
         <p class="text-slate-400 mt-1">Aspiring Systems Administrator & DevOps / Cloud Engineer</p>
       </div>
@@ -51,9 +54,29 @@
       </div>
     </div>
 
+    <!-- Security Posture Banner -->
+    <h2 class="text-xl font-semibold mt-10 mb-4 text-slate-200">🛡️ Host Security Posture (Defense in Depth)</h2>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="bg-slate-900/70 border border-emerald-900/50 rounded-xl p-4 flex items-start gap-3">
+        <span class="text-emerald-400 font-mono text-lg">✔</span>
+        <div>
+          <h3 class="font-semibold text-white text-sm">UFW Kernel Firewall (Default-Deny)</h3>
+          <p class="text-slate-400 text-xs mt-1">All 65,535 ingress ports blocked by default; strict whitelist for ports <code>22</code>, <code>53</code>, <code>80</code>, <code>8080</code>, and <code>3001</code>.</p>
+        </div>
+      </div>
+      <div class="bg-slate-900/70 border border-emerald-900/50 rounded-xl p-4 flex items-start gap-3">
+        <span class="text-emerald-400 font-mono text-lg">✔</span>
+        <div>
+          <h3 class="font-semibold text-white text-sm">OpenSSH Ed25519 Key-Only Access</h3>
+          <p class="text-slate-400 text-xs mt-1">Root login & password auth disabled via <code>01-homelab-hardening.conf</code>; resistant to brute-force attacks.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Core Competencies (Clickable GitHub Evidence Tags) -->
     <h2 class="text-xl font-semibold mt-10 mb-4 text-slate-200">🛠️ Core Technical Stack (Click to View Code)</h2>
     <div class="flex flex-wrap gap-2">
+      <a href="https://github.com/ariff-dev04/linux-homelab-infrastructure/blob/main/docs/security-hardening.md" target="_blank" class="bg-emerald-950/40 border border-emerald-800/80 hover:border-emerald-400 text-emerald-300 px-3 py-1.5 rounded-lg text-sm transition">🛡️ CIS Security Hardening (UFW & SSH) ↗</a>
       <a href="https://github.com/ariff-dev04/linux-homelab-infrastructure/tree/main/docs" target="_blank" class="bg-slate-900 border border-slate-800 hover:border-sky-500 hover:text-sky-400 px-3 py-1.5 rounded-lg text-sm text-slate-300 transition">Linux CLI & SOPs (Ubuntu 24.04) ↗</a>
       <a href="https://github.com/ariff-dev04/linux-homelab-infrastructure" target="_blank" class="bg-slate-900 border border-slate-800 hover:border-sky-500 hover:text-sky-400 px-3 py-1.5 rounded-lg text-sm text-slate-300 transition">Docker & Compose V2 ↗</a>
       <a href="https://github.com/ariff-dev04/linux-homelab-infrastructure/tree/main/pihole" target="_blank" class="bg-slate-900 border border-slate-800 hover:border-sky-500 hover:text-sky-400 px-3 py-1.5 rounded-lg text-sm text-slate-300 transition">DNS & TCP/IP Networking ↗</a>
