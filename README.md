@@ -24,3 +24,7 @@ Bare-metal Ubuntu Server 24.04 LTS homelab deploying containerized network and i
 ## Phase 3.1: Host Security Hardening (UFW & OpenSSH)
 - **Firewall (`ufw`):** Enforced default-deny ingress policy allowing only active service ports (`22`, `53`, `80`, `8080`, `3001`).
 - **SSH Hardening:** Configured `ed25519` key-based authentication and disabled root/password logins via `/etc/ssh/sshd_config.d/01-homelab-hardening.conf` (overriding `50-cloud-init.conf` first-match precedence).
+
+## Phase 3.2: Automated Disaster Recovery Backups (`scripts/backup.sh`)
+- **Automation:** Engineered a defensive Bash script (`set -euo pipefail`) utilizing `tar -czf` to snapshot all Docker Compose manifests, `.env` secrets, and persistent container volumes (`etc-pihole`, `uptime-kuma-data`).
+- **Security & Retention:** Enforced `chmod 600` archive permissions, audit logging (`backup.log`), and an automated 7-day rolling retention policy via `find -mtime +7 -delete`.
