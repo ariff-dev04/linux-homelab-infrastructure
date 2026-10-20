@@ -14,6 +14,8 @@ services:
       FTLCONF_dns_hosts: |-
         192.168.1.62 ariff.lab
         192.168.1.62 status.ariff.lab
+        192.168.1.62 rvm.ariff.lab
+        192.168.1.62 admin.rvm.ariff.lab
     volumes:
       - ./etc-pihole:/etc/pihole
     restart: unless-stopped
