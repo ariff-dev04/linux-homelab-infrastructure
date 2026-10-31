@@ -1,90 +1,384 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Muhammad 'Ariff | SysAdmin & Cloud Homelab</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ariff Zakaria | Bare-Metal Cloud & DevOps Command Center</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen">
-  <div class="max-w-4xl mx-auto px-6 py-12">
-    <!-- Hero Header -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-8">
+<body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-slate-950 min-h-screen">
+  <div id="app" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Top Header & Live Telemetry Status Bar -->
+    <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
       <div>
-        <div class="flex flex-wrap gap-2">
-          <span class="text-xs font-mono uppercase tracking-widest text-sky-400 bg-sky-950/60 border border-sky-800 px-3 py-1 rounded-full">Bare-Metal Ubuntu 24.04 LTS • ariff.lab</span>
-          <span class="text-xs font-mono uppercase tracking-widest text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-3 py-1 rounded-full">🛡️ CIS Hardened • UFW + Ed25519 SSH</span>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <span class="relative flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+          </span>
+          <span class="font-mono text-xs uppercase tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+            {{ telemetry.hostname || 'homelab-svr' }} • Bare-Metal Ubuntu 24.04 LTS
+          </span>
+          <span v-if="isAdmin" class="font-mono text-xs uppercase tracking-wider text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-full">
+            🔒 LAN Admin View (192.168.1.62)
+          </span>
+          <span v-else class="font-mono text-xs uppercase tracking-wider text-sky-300 bg-sky-500/10 border border-sky-500/30 px-2.5 py-1 rounded-full">
+            🌍 Public Zero-Trust Showcase
+          </span>
         </div>
-        <h1 class="text-4xl font-bold mt-4 text-white">Muhammad 'Ariff</h1>
-        <p class="text-slate-400 mt-1">Aspiring Systems Administrator & DevOps / Cloud Engineer</p>
-      </div>
-      <a href="https://github.com/ariff-dev04/linux-homelab-infrastructure" target="_blank" class="mt-4 md:mt-0 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold px-5 py-2.5 rounded-lg transition">
-        View GitHub IaC Repo →
-      </a>
-    </div>
-
-    <!-- Active Services Grid (3 Cards) -->
-    <h2 class="text-xl font-semibold mt-10 mb-4 text-slate-200">🟢 Live Containerized Infrastructure</h2>
-    <div class="grid md:grid-cols-3 gap-4">
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-sky-500/50 transition">
-        <div class="flex justify-between items-center">
-          <h3 class="font-bold text-base text-white">Pi-hole v6 DNS</h3>
-          <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs px-2 py-0.5 rounded-full font-mono">:53 / :8080</span>
-        </div>
-        <p class="text-slate-400 text-sm mt-2">Recursive DNS forwarder, ad sinkhole & local A-record resolver (<code>ariff.lab</code>).</p>
-        <a href="http://192.168.1.62:8080/admin" target="_blank" class="inline-block mt-4 text-sky-400 text-sm font-semibold hover:underline">Open Admin Console →</a>
-      </div>
-
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-sky-500/50 transition">
-        <div class="flex justify-between items-center">
-          <h3 class="font-bold text-base text-white">NGINX Alpine Web</h3>
-          <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs px-2 py-0.5 rounded-full font-mono">:80</span>
-        </div>
-        <p class="text-slate-400 text-sm mt-2">Hardened read-only bind-mounted HTTP server hosting portfolio & service telemetry.</p>
-        <span class="inline-block mt-4 text-emerald-400 text-sm font-mono">HTTP/1.1 200 OK</span>
+        <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mt-2 text-white">
+          Muhammad 'Ariff <span class="text-slate-400 font-normal">| Systems & Cloud Engineering</span>
+        </h1>
+        <p class="text-slate-400 text-sm mt-1">
+          Self-hosted Infrastructure-as-Code (IaC), Containerized Microservices & Real-Time Hardware Telemetry
+        </p>
       </div>
 
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-sky-500/50 transition">
-        <div class="flex justify-between items-center">
-          <h3 class="font-bold text-base text-white">Uptime Kuma v2</h3>
-          <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs px-2 py-0.5 rounded-full font-mono">:3001</span>
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-2 text-right font-mono text-xs">
+          <div class="text-slate-400">UPTIME: <span class="text-emerald-400 font-semibold">{{ telemetry.uptime || 'Loading...' }}</span></div>
+          <div class="text-slate-500 text-[11px]">Updated: {{ lastUpdatedText }}</div>
         </div>
-        <p class="text-slate-400 text-sm mt-2">Real-time L3/L7 observability polling HTTP, DNS, ICMP & Docker sockets.</p>
-        <a href="http://192.168.1.62:3001" target="_blank" class="inline-block mt-4 text-sky-400 text-sm font-semibold hover:underline">Open Status UI →</a>
+        <!-- Admin-Only Local Control Buttons (Hidden on Public Internet!) -->
+        <template v-if="isAdmin">
+          <a href="http://192.168.1.62:3001" target="_blank" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs px-4 py-2.5 rounded-lg transition">
+            Uptime Kuma (:3001) ↗
+          </a>
+          <a href="http://192.168.1.62:8080/admin" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs px-4 py-2.5 rounded-lg transition">
+            Pi-hole DNS (:8080) ↗
+          </a>
+        </template>
+        <template v-else>
+          <a href="https://github.com/ariff-dev04" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs px-4 py-2.5 rounded-lg transition">
+            GitHub Profile ↗
+          </a>
+        </template>
       </div>
-    </div>
+    </header>
 
-    <!-- Security Posture Banner -->
-    <h2 class="text-xl font-semibold mt-10 mb-4 text-slate-200">🛡️ Host Security Posture (Defense in Depth)</h2>
-    <div class="grid md:grid-cols-2 gap-4">
-      <div class="bg-slate-900/70 border border-emerald-900/50 rounded-xl p-4 flex items-start gap-3">
-        <span class="text-emerald-400 font-mono text-lg">✔</span>
+    <!-- Hardware Telemetry Grid (4 Gauges) -->
+    <section>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-mono uppercase tracking-wider text-slate-400">⚡ Live Bare-Metal Hardware Telemetry (/telemetry.json)</h2>
+        <button @click="fetchTelemetry" class="text-xs font-mono text-emerald-400 hover:underline">↻ Refresh Now</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- CPU Thermal & Fan Card -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-5">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-mono uppercase text-slate-400">CPU Thermal & EC Fan</span>
+            <span :class="tempBadgeClass" class="text-[11px] font-mono px-2 py-0.5 rounded font-semibold">
+              {{ tempStatusText }}
+            </span>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span class="text-3xl font-bold font-mono text-white">{{ telemetry.hardware.cpu_temp_c }}°C</span>
+            <span class="text-xs font-mono text-slate-400">/ 65°C EC Trip</span>
+          </div>
+          <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+            <div :class="tempBarClass" class="h-full transition-all duration-500" :style="{ width: Math.min((telemetry.hardware.cpu_temp_c / 85) * 100, 100) + '%' }"></div>
+          </div>
+          <div class="mt-3 flex justify-between text-xs font-mono text-slate-400">
+            <span>Dell SMM Fan: <strong class="text-slate-200">{{ telemetry.hardware.fan_rpm }} RPM</strong></span>
+            <span>{{ telemetry.hardware.fan_rpm > 0 ? 'ACTIVE' : 'PASSIVE (0dB)' }}</span>
+          </div>
+        </div>
+
+        <!-- CPU Frequency & Load Card -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-5">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-mono uppercase text-slate-400">CPU Clock & Load (TLP)</span>
+            <span class="text-[11px] font-mono bg-sky-500/10 text-sky-400 border border-sky-500/20 px-2 py-0.5 rounded">i7-3540M (4T)</span>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span class="text-3xl font-bold font-mono text-white">{{ (telemetry.hardware.cpu_mhz / 1000).toFixed(2) }} GHz</span>
+            <span class="text-xs font-mono text-slate-400">Load: {{ telemetry.hardware.load_1m }}</span>
+          </div>
+          <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+            <div class="bg-sky-500 h-full transition-all duration-500" :style="{ width: Math.min((telemetry.hardware.cpu_mhz / 3000) * 100, 100) + '%' }"></div>
+          </div>
+          <div class="mt-3 flex justify-between text-xs font-mono text-slate-400">
+            <span>Scale: 1.2–3.0 GHz</span>
+            <span>Capacity: {{ ((telemetry.hardware.load_1m / 4) * 100).toFixed(1) }}%</span>
+          </div>
+        </div>
+
+        <!-- Memory Headroom Card -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-5">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-mono uppercase text-slate-400">System Memory (RAM)</span>
+            <span class="text-[11px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded">{{ (100 - telemetry.hardware.mem_pct).toFixed(1) }}% Free</span>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span class="text-3xl font-bold font-mono text-white">{{ telemetry.hardware.mem_pct }}%</span>
+            <span class="text-xs font-mono text-slate-400">{{ telemetry.hardware.mem_used_mb }} / {{ telemetry.hardware.mem_total_mb }} MB</span>
+          </div>
+          <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+            <div class="bg-emerald-500 h-full transition-all duration-500" :style="{ width: telemetry.hardware.mem_pct + '%' }"></div>
+          </div>
+          <div class="mt-3 flex justify-between text-xs font-mono text-slate-400">
+            <span>Available: ~{{ ((telemetry.hardware.mem_total_mb - telemetry.hardware.mem_used_mb) / 1024).toFixed(1) }} GiB</span>
+            <span>DDR3L SODIMM</span>
+          </div>
+        </div>
+
+        <!-- Disk & Containers Card -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-5">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-mono uppercase text-slate-400">Storage & Docker Engine</span>
+            <span class="text-[11px] font-mono bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded">{{ telemetry.containers_running }} Active</span>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span class="text-3xl font-bold font-mono text-white">{{ telemetry.hardware.disk_pct }}%</span>
+            <span class="text-xs font-mono text-slate-400">{{ telemetry.hardware.disk_used_gb }} / {{ telemetry.hardware.disk_total_gb }} GB SSD</span>
+          </div>
+          <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+            <div class="bg-purple-500 h-full transition-all duration-500" :style="{ width: telemetry.hardware.disk_pct + '%' }"></div>
+          </div>
+          <div class="mt-3 flex justify-between text-xs font-mono text-slate-400">
+            <span>Daily Cron Backup: 20:00</span>
+            <span>7-Day Retention</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hosted Projects & Architecture Matrix -->
+    <section>
+      <h2 class="text-sm font-mono uppercase tracking-wider text-slate-400 mb-3">🚀 Production Projects & Self-Hosted Platforms</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+        <!-- Project 1: OpenRVM Cloud v2.0 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">LIVE ON HOMELAB (6 Containers)</span>
+              <span class="text-xs font-mono text-slate-400">{{ isAdmin ? ':8085 / :8000' : 'Cloudflare Tunnel' }}</span>
+            </div>
+            <h3 class="text-xl font-bold text-white mt-3">♻️ OpenRVM Cloud v2.0</h3>
+            <p class="text-slate-400 text-sm mt-2">
+              Containerized Smart Waste (2-Bin Dry Recyclables) & Used Cooking Oil (UCO) IoT telemetry, split-photo fraud audit, and merchant payout platform.
+            </p>
+            <div class="flex flex-wrap gap-1.5 mt-4">
+              <span class="text-[11px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Vue 3 + TS</span>
+              <span class="text-[11px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">FastAPI</span>
+              <span class="text-[11px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">PostgreSQL 16</span>
+              <span class="text-[11px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Redis 7 SETNX</span>
+              <span class="text-[11px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Cloudflare Zero-Trust</span>
+            </div>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800 flex flex-wrap gap-2">
+            <a href="https://openrvm.ariffzakaria.dev/?portal=user" target="_blank" class="flex-1 text-center bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs py-2 px-3 rounded-lg transition">
+              📱 User App ↗
+            </a>
+            <a href="https://openrvm.ariffzakaria.dev/?portal=admin" target="_blank" class="flex-1 text-center bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs py-2 px-3 rounded-lg transition">
+              🖥️ Admin Sandbox ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- Project 2: Enterprise Linux Homelab -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono px-2.5 py-1 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">CORE INFRA (3 Containers)</span>
+              <span class="text-xs font-mono text-slate-400">{{ isAdmin ? ':53 / :80 / :3001' : 'Hardened UFW' }}</span>
+            </div>
+            <h3 class="text-xl font-bold text-white mt-3">🛡️ Bare-Metal Linux Homelab</h3>
+            <p class="text-slate-400 text-sm mt-2">
+              CIS-hardened Ubuntu Server 24.04 LTS hosting Pi-hole v6 DNS sinkhole, NGINX Alpine, Uptime Kuma v2 observability, TLP dynamic scaling, and automated cron DR backups.
+            </p>
+            <div class="flex flex-wrap gap-1.5 mt-4">
+              <span class="text-[11px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Ubuntu 24.04</span>
+              <span class="text-[11px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Docker Compose</span>
+              <span class="text-[11px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">UFW / Ed25519</span>
+              <span class="text-[11px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Pi-hole v6</span>
+              <span class="text-[11px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Bash IaC</span>
+            </div>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800 flex flex-wrap gap-2">
+            <a href="/telemetry.json" target="_blank" class="flex-1 text-center bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/30 font-mono text-xs py-2 px-3 rounded-lg transition">
+              { } Live Telemetry JSON ↗
+            </a>
+            <a v-if="isAdmin" href="http://192.168.1.62:3001" target="_blank" class="flex-1 text-center bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs py-2 px-3 rounded-lg transition">
+              📊 Uptime Kuma ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- Project 3: ChargeTrail v2 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono px-2.5 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">READY FOR HOMELAB DEPLOY</span>
+              <span class="text-xs font-mono text-slate-400">{{ isAdmin ? 'Reserved :8002' : 'PostGIS Stack' }}</span>
+            </div>
+            <h3 class="text-xl font-bold text-white mt-3">⚡ ChargeTrail v2 (EV Route Planner)</h3>
+            <p class="text-slate-400 text-sm mt-2">
+              $0/month open-source EV charging discovery, crowdsourced consensus & physics-aware highway route planner for Peninsular Malaysia expressways (PLUS E1/E2, Karak, LPT).
+            </p>
+            <div class="flex flex-wrap gap-1.5 mt-4">
+              <span class="text-[11px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Flutter Mobile</span>
+              <span class="text-[11px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">FastAPI</span>
+              <span class="text-[11px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">PostGIS Geospatial</span>
+              <span class="text-[11px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">OpenStreetMap</span>
+            </div>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs font-mono text-slate-400">
+            <span>Est. Footprint: ~220 MB RAM</span>
+            <span class="text-emerald-400">14.3 GiB Headroom Ready</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Live Docker Container Telemetry Table -->
+    <section class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
-          <h3 class="font-semibold text-white text-sm">UFW Kernel Firewall (Default-Deny)</h3>
-          <p class="text-slate-400 text-xs mt-1">All 65,535 ingress ports blocked by default; strict whitelist for ports <code>22</code>, <code>53</code>, <code>80</code>, <code>8080</code>, and <code>3001</code>.</p>
+          <h2 class="text-base font-bold text-white">🐳 Live Docker Container Telemetry ({{ telemetry.containers.length }} Active)</h2>
+          <p class="text-xs text-slate-400">Real-time `docker stats --no-stream` feed updated every 60s via atomic host cron</p>
         </div>
+        <span class="text-xs font-mono bg-slate-800 text-slate-300 px-3 py-1 rounded-md">
+          Total Container RAM: ~508 MiB / 15.02 GiB (3.3%)
+        </span>
       </div>
-      <div class="bg-slate-900/70 border border-emerald-900/50 rounded-xl p-4 flex items-start gap-3">
-        <span class="text-emerald-400 font-mono text-lg">✔</span>
-        <div>
-          <h3 class="font-semibold text-white text-sm">OpenSSH Ed25519 Key-Only Access</h3>
-          <p class="text-slate-400 text-xs mt-1">Root login & password auth disabled via <code>01-homelab-hardening.conf</code>; resistant to brute-force attacks.</p>
-        </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-800 text-[11px] font-mono uppercase text-slate-400 bg-slate-950/50">
+              <th class="py-3 px-6">Container Name</th>
+              <th class="py-3 px-6">Stack</th>
+              <th class="py-3 px-6">Status</th>
+              <th class="py-3 px-6">CPU %</th>
+              <th class="py-3 px-6">Memory Usage</th>
+              <th class="py-3 px-6">RAM %</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/70 font-mono text-xs">
+            <tr v-for="c in telemetry.containers" :key="c.name" class="hover:bg-slate-800/40 transition">
+              <td class="py-3 px-6 font-semibold text-white">{{ c.name }}</td>
+              <td class="py-3 px-6">
+                <span :class="c.name.startsWith('openrvm') ? 'text-emerald-400 bg-emerald-500/10' : 'text-sky-400 bg-sky-500/10'" class="px-2 py-0.5 rounded text-[11px]">
+                  {{ c.name.startsWith('openrvm') ? 'OpenRVM v2.0' : 'Core Homelab' }}
+                </span>
+              </td>
+              <td class="py-3 px-6 text-emerald-400">● Running</td>
+              <td class="py-3 px-6 text-slate-300">{{ c.cpu }}</td>
+              <td class="py-3 px-6 text-slate-300">{{ c.mem }}</td>
+              <td class="py-3 px-6 text-slate-400">{{ c.mem_pct }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-    </div>
+    </section>
 
-    <!-- Core Competencies (Clickable GitHub Evidence Tags) -->
-    <h2 class="text-xl font-semibold mt-10 mb-4 text-slate-200">🛠️ Core Technical Stack (Click to View Code)</h2>
-    <div class="flex flex-wrap gap-2">
-      <a href="https://github.com/ariff-dev04/linux-homelab-infrastructure/blob/main/docs/security-hardening.md" target="_blank" class="bg-emerald-950/40 border border-emerald-800/80 hover:border-emerald-400 text-emerald-300 px-3 py-1.5 rounded-lg text-sm transition">🛡️ CIS Security Hardening (UFW & SSH) ↗</a>
-      <a href="https://github.com/ariff-dev04/linux-homelab-infrastructure/blob/main/scripts/backup.sh" target="_blank" class="bg-sky-950/40 border border-sky-800/80 hover:border-sky-400 text-sky-300 px-3 py-1.5 rounded-lg text-sm transition">📦 Bash DR Backup Automation (tar/cron) ↗</a>
-      <a href="https://github.com/ariff-dev04/linux-homelab-infrastructure/tree/main/docs" target="_blank" class="bg-slate-900 border border-slate-800 hover:border-sky-500 hover:text-sky-400 px-3 py-1.5 rounded-lg text-sm text-slate-300 transition">Linux CLI & SOPs (Ubuntu 24.04) ↗</a>
-      <a href="https://github.com/ariff-dev04/linux-homelab-infrastructure" target="_blank" class="bg-slate-900 border border-slate-800 hover:border-sky-500 hover:text-sky-400 px-3 py-1.5 rounded-lg text-sm text-slate-300 transition">Docker & Compose V2 ↗</a>
-      <a href="https://github.com/ariff-dev04/linux-homelab-infrastructure/tree/main/pihole" target="_blank" class="bg-slate-900 border border-slate-800 hover:border-sky-500 hover:text-sky-400 px-3 py-1.5 rounded-lg text-sm text-slate-300 transition">DNS & TCP/IP Networking ↗</a>
-      <a href="https://github.com/ariff-dev04/linux-homelab-infrastructure/tree/main/nginx" target="_blank" class="bg-slate-900 border border-slate-800 hover:border-sky-500 hover:text-sky-400 px-3 py-1.5 rounded-lg text-sm text-slate-300 transition">NGINX Web Hosting ↗</a>
-      <a href="https://github.com/ariff-dev04/linux-homelab-infrastructure/tree/main/monitoring" target="_blank" class="bg-slate-900 border border-slate-800 hover:border-sky-500 hover:text-sky-400 px-3 py-1.5 rounded-lg text-sm text-slate-300 transition">Observability & Monitoring ↗</a>
-      <a href="https://github.com/ariff-dev04/linux-homelab-infrastructure/commits/main" target="_blank" class="bg-slate-900 border border-slate-800 hover:border-sky-500 hover:text-sky-400 px-3 py-1.5 rounded-lg text-sm text-slate-300 transition">Git & Infrastructure as Code ↗</a>
-    </div>
   </div>
+
+  <script>
+    const { createApp, ref, computed, onMounted } = Vue;
+    createApp({
+      setup() {
+        const host = window.location.hostname;
+        // Automatically enable Admin Mode only when accessed via local LAN or ?admin=1
+        const isAdmin = ref(
+          host === '192.168.1.62' ||
+          host === 'ariff.lab' ||
+          host === 'localhost' ||
+          new URLSearchParams(window.location.search).get('view') === 'admin'
+        );
+
+        const telemetry = ref({
+          hostname: 'homelab-svr',
+          updated_at: '',
+          uptime: 'Loading...',
+          hardware: {
+            cpu_temp_c: 50,
+            fan_rpm: 0,
+            cpu_mhz: 1200,
+            load_1m: 0.1,
+            mem_used_mb: 1064,
+            mem_total_mb: 15379,
+            mem_pct: 6.9,
+            disk_used_gb: 17,
+            disk_total_gb: 229,
+            disk_pct: 8
+          },
+          containers_running: 10,
+          containers: []
+        });
+
+        const fetchTelemetry = async () => {
+          try {
+            const res = await fetch('/telemetry.json?t=' + Date.now());
+            if (res.ok) {
+              telemetry.value = await res.json();
+            }
+          } catch (e) {
+            console.error('Failed to fetch telemetry:', e);
+          }
+        };
+
+        const lastUpdatedText = computed(() => {
+          if (!telemetry.value.updated_at) return 'Just now';
+          return new Date(telemetry.value.updated_at).toLocaleTimeString();
+        });
+
+        const tempBadgeClass = computed(() => {
+          const t = telemetry.value.hardware.cpu_temp_c;
+          if (t >= 65) return 'bg-rose-500/15 text-rose-400 border border-rose-500/30';
+          if (t >= 56) return 'bg-amber-500/15 text-amber-400 border border-amber-500/30';
+          return 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30';
+        });
+
+        const tempBarClass = computed(() => {
+          const t = telemetry.value.hardware.cpu_temp_c;
+          if (t >= 65) return 'bg-rose-500';
+          if (t >= 56) return 'bg-amber-500';
+          return 'bg-emerald-500';
+        });
+
+        const tempStatusText = computed(() => {
+          const t = telemetry.value.hardware.cpu_temp_c;
+          if (t >= 65) return 'FAN ACTIVE';
+          if (t >= 56) return 'WARM';
+          return 'OPTIMAL';
+        });
+
+        onMounted(() => {
+          fetchTelemetry();
+          setInterval(fetchTelemetry, 15000);
+        });
+
+        return {
+          isAdmin,
+          telemetry,
+          fetchTelemetry,
+          lastUpdatedText,
+          tempBadgeClass,
+          tempBarClass,
+          tempStatusText
+        };
+      }
+    }).mount('#app');
+  </script>
 </body>
 </html>
