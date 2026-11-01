@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Path to your NGINX web root (adjust if your folder name differs)
-WEB_ROOT="/home/arifflabs/homelab/nginx/html"
+WEB_ROOT="/home/arifflabs/homelab/nginx/html/public"
 OUT_FILE="${WEB_ROOT}/telemetry.json"
 TMP_FILE="${WEB_ROOT}/telemetry.json.tmp"
 

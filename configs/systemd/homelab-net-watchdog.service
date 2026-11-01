@@ -1,0 +1,7 @@
+[Unit]
+Description=Homelab L3 Network Self-Healing Watchdog
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/homelab-net-watchdog.sh

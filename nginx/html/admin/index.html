@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADMIN COMMAND CENTER | Ariff Zakaria Homelab</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen">
+  <div id="app" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-amber-500/30 pb-6">
+      <div>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <span class="relative flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+          </span>
+          <span class="font-mono text-xs uppercase tracking-widest text-amber-300 bg-amber-500/15 border border-amber-500/30 px-2.5 py-1 rounded-full">
+            🔒 ZERO-TRUST ADMIN COMMAND CENTER (AUTHENTICATED)
+          </span>
+          <span class="font-mono text-xs text-slate-400 bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-full">
+            Host: {{ telemetry.hostname }} (192.168.1.62)
+          </span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mt-2 text-white">
+          Homelab Admin Console <span class="text-amber-400 font-normal">| Private Infrastructure Control</span>
+        </h1>
+        <p class="text-slate-400 text-sm mt-1">
+          Protected by Cloudflare Zero Trust Access • Direct Service Launchers & Live Container Inspection
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2.5">
+        <div class="bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-2 text-right font-mono text-xs">
+          <div class="text-slate-400">UPTIME: <span class="text-emerald-400 font-semibold">{{ telemetry.uptime }}</span></div>
+          <div class="text-slate-500 text-[11px]">Updated: {{ lastUpdatedText }}</div>
+        </div>
+        <a href="https://kuma.ariffzakaria.dev" target="_blank" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs px-4 py-2.5 rounded-lg transition">
+          📊 Uptime Kuma ↗
+        </a>
+        <a href="https://pihole.ariffzakaria.dev/admin" target="_blank" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs px-4 py-2.5 rounded-lg transition">
+          🛡️ Pi-hole Admin ↗
+        </a>
+        <a href="https://lab.ariffzakaria.dev" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs px-3.5 py-2.5 rounded-lg transition">
+          🌍 Public View ↗
+        </a>
+      </div>
+    </header>
+
+    <section>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-mono uppercase tracking-wider text-amber-400">⚡ Admin Hardware & Thermal Telemetry</h2>
+        <button @click="fetchTelemetry" class="text-xs font-mono text-emerald-400 hover:underline">↻ Refresh Now</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-mono uppercase text-slate-400">CPU Thermal & EC Fan</span>
+            <span :class="tempBadgeClass" class="text-[11px] font-mono px-2 py-0.5 rounded font-semibold">{{ tempStatusText }}</span>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span class="text-3xl font-bold font-mono text-white">{{ telemetry.hardware.cpu_temp_c }}°C</span>
+            <span class="text-xs font-mono text-slate-400">/ 65°C EC Trip</span>
+          </div>
+          <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+            <div :class="tempBarClass" class="h-full transition-all duration-500" :style="{ width: Math.min((telemetry.hardware.cpu_temp_c / 85) * 100, 100) + '%' }"></div>
+          </div>
+          <div class="mt-3 flex justify-between text-xs font-mono text-slate-400">
+            <span>Dell SMM Fan: <strong class="text-slate-200">{{ telemetry.hardware.fan_rpm }} RPM</strong></span>
+            <span>{{ telemetry.hardware.fan_rpm > 0 ? 'ACTIVE' : 'PASSIVE (0dB)' }}</span>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-mono uppercase text-slate-400">CPU Clock & Load (TLP)</span>
+            <span class="text-[11px] font-mono bg-sky-500/10 text-sky-400 border border-sky-500/20 px-2 py-0.5 rounded">i7-3540M (4T)</span>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span class="text-3xl font-bold font-mono text-white">{{ (telemetry.hardware.cpu_mhz / 1000).toFixed(2) }} GHz</span>
+            <span class="text-xs font-mono text-slate-400">Load: {{ telemetry.hardware.load_1m }}</span>
+          </div>
+          <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+            <div class="bg-sky-500 h-full transition-all duration-500" :style="{ width: Math.min((telemetry.hardware.cpu_mhz / 3000) * 100, 100) + '%' }"></div>
+          </div>
+          <div class="mt-3 flex justify-between text-xs font-mono text-slate-400">
+            <span>Scale: 1.2–3.0 GHz</span>
+            <span>Capacity: {{ ((telemetry.hardware.load_1m / 4) * 100).toFixed(1) }}%</span>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-mono uppercase text-slate-400">System Memory (RAM)</span>
+            <span class="text-[11px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded">{{ (100 - telemetry.hardware.mem_pct).toFixed(1) }}% Free</span>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span class="text-3xl font-bold font-mono text-white">{{ telemetry.hardware.mem_pct }}%</span>
+            <span class="text-xs font-mono text-slate-400">{{ telemetry.hardware.mem_used_mb }} / {{ telemetry.hardware.mem_total_mb }} MB</span>
+          </div>
+          <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+            <div class="bg-emerald-500 h-full transition-all duration-500" :style="{ width: telemetry.hardware.mem_pct + '%' }"></div>
+          </div>
+          <div class="mt-3 flex justify-between text-xs font-mono text-slate-400">
+            <span>Available: ~{{ ((telemetry.hardware.mem_total_mb - telemetry.hardware.mem_used_mb) / 1024).toFixed(1) }} GiB</span>
+            <span>DDR3L SODIMM</span>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-mono uppercase text-slate-400">Storage & Docker Engine</span>
+            <span class="text-[11px] font-mono bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded">{{ telemetry.containers_running }} Active</span>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span class="text-3xl font-bold font-mono text-white">{{ telemetry.hardware.disk_pct }}%</span>
+            <span class="text-xs font-mono text-slate-400">{{ telemetry.hardware.disk_used_gb }} / {{ telemetry.hardware.disk_total_gb }} GB SSD</span>
+          </div>
+          <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+            <div class="bg-purple-500 h-full transition-all duration-500" :style="{ width: telemetry.hardware.disk_pct + '%' }"></div>
+          </div>
+          <div class="mt-3 flex justify-between text-xs font-mono text-slate-400">
+            <span>Static IP: 192.168.1.62</span>
+            <span>GW: 192.168.1.254</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="text-base font-bold text-white">🐳 Admin Container Control & Port Matrix ({{ telemetry.containers.length }} Running)</h2>
+          <p class="text-xs text-slate-400">Internal ports, Docker bridge bindings, and direct management links</p>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-800 text-[11px] font-mono uppercase text-slate-400 bg-slate-950/50">
+              <th class="py-3 px-6">Container Name</th>
+              <th class="py-3 px-6">Role & Internal Port</th>
+              <th class="py-3 px-6">Status</th>
+              <th class="py-3 px-6">CPU %</th>
+              <th class="py-3 px-6">Memory Usage</th>
+              <th class="py-3 px-6">Admin Action / Endpoint</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/70 font-mono text-xs">
+            <tr v-for="c in telemetry.containers" :key="c.name" class="hover:bg-slate-800/40 transition">
+              <td class="py-3 px-6 font-semibold text-white">{{ c.name }}</td>
+              <td class="py-3 px-6 text-slate-300">{{ getMeta(c.name).role }}</td>
+              <td class="py-3 px-6 text-emerald-400">● Running</td>
+              <td class="py-3 px-6 text-slate-300">{{ c.cpu }}</td>
+              <td class="py-3 px-6 text-slate-300">{{ c.mem }}</td>
+              <td class="py-3 px-6">
+                <a v-if="getMeta(c.name).url" :href="getMeta(c.name).url" target="_blank" class="inline-flex items-center gap-1 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded text-[11px] transition">
+                  {{ getMeta(c.name).label }} ↗
+                </a>
+                <span v-else class="text-slate-400 text-[11px]">{{ getMeta(c.name).label }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const { createApp, ref, computed, onMounted } = Vue;
+    createApp({
+      setup() {
+        const meta = {
+          'openrvm_ui': { role: 'Vue 3 SPA (127.0.0.1:8085->80)', label: 'OpenRVM Admin Portal', url: 'https://openrvm.ariffzakaria.dev/?portal=admin' },
+          'openrvm_api': { role: 'FastAPI Backend (127.0.0.1:8000)', label: 'VS Code Forward :8000/docs', url: '' },
+          'openrvm_simulator': { role: 'IoT Simulator (127.0.0.1:8081)', label: 'VS Code Forward :8081/docs', url: '' },
+          'openrvm_db': { role: 'PostgreSQL 16 (5432/tcp internal)', label: 'openrvm_internal bridge', url: '' },
+          'openrvm_redis': { role: 'Redis 7 Cache (6379/tcp internal)', label: 'openrvm_internal bridge', url: '' },
+          'openrvm_tunnel': { role: 'Cloudflared QUIC Daemon', label: 'Cloudflare Zero Trust Dashboard', url: 'https://one.dash.cloudflare.com' },
+          'openrvm_ngrok': { role: 'Ngrok Agent (4040/tcp)', label: 'Fallback Tunnel', url: 'https://mumbling-lubricate-oat.ngrok-free.dev/?portal=admin' },
+          'nginx-web': { role: 'NGINX VHosts (127.0.0.1:80)', label: 'Raw /telemetry.json', url: '/telemetry.json' },
+          'pihole': { role: 'Pi-hole v6 DNS (:53 & :8080)', label: 'Open Pi-hole Admin', url: 'https://pihole.ariffzakaria.dev/admin' },
+          'uptime-kuma': { role: 'Uptime Kuma v2 (:3001)', label: 'Open Uptime Kuma', url: 'https://kuma.ariffzakaria.dev' }
+        };
+        const getMeta = (name) => meta[name] || { role: 'Docker Service', label: 'Internal', url: '' };
+
+        const telemetry = ref({
+          hostname: 'homelab-svr',
+          updated_at: '',
+          uptime: 'Loading...',
+          hardware: { cpu_temp_c: 50, fan_rpm: 0, cpu_mhz: 1200, load_1m: 0.1, mem_used_mb: 1064, mem_total_mb: 15379, mem_pct: 6.9, disk_used_gb: 17, disk_total_gb: 229, disk_pct: 8 },
+          containers_running: 10,
+          containers: []
+        });
+
+        const fetchTelemetry = async () => {
+          try {
+            const res = await fetch('/telemetry.json?t=' + Date.now());
+            if (res.ok) telemetry.value = await res.json();
+          } catch (e) { console.error(e); }
+        };
+
+        const lastUpdatedText = computed(() => telemetry.value.updated_at ? new Date(telemetry.value.updated_at).toLocaleTimeString() : 'Just now');
+        const tempBadgeClass = computed(() => telemetry.value.hardware.cpu_temp_c >= 65 ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30' : (telemetry.value.hardware.cpu_temp_c >= 56 ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'));
+        const tempBarClass = computed(() => telemetry.value.hardware.cpu_temp_c >= 65 ? 'bg-rose-500' : (telemetry.value.hardware.cpu_temp_c >= 56 ? 'bg-amber-500' : 'bg-emerald-500'));
+        const tempStatusText = computed(() => telemetry.value.hardware.cpu_temp_c >= 65 ? 'FAN ACTIVE' : (telemetry.value.hardware.cpu_temp_c >= 56 ? 'WARM' : 'OPTIMAL'));
+
+        onMounted(() => { fetchTelemetry(); setInterval(fetchTelemetry, 15000); });
+        return { telemetry, fetchTelemetry, getMeta, lastUpdatedText, tempBadgeClass, tempBarClass, tempStatusText };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

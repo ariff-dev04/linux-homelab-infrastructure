@@ -3,7 +3,7 @@ services:
     container_name: nginx-web
     image: nginx:alpine
     ports:
-      - "80:80/tcp"
+      - "127.0.0.1:80:80/tcp"
     volumes:
       - ./html:/usr/share/nginx/html:ro
       - ./conf.d:/etc/nginx/conf.d:ro

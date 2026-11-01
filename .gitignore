@@ -7,3 +7,4 @@
 **/uptime-kuma-data/
 *.db
 *.log
+nginx/html/public/telemetry.json
