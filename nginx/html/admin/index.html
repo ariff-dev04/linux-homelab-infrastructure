@@ -56,6 +56,9 @@
         <a href="https://pihole.ariffzakaria.dev/admin" target="_blank" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs px-4 py-2.5 rounded-lg transition">
           🛡️ Pi-hole Admin ↗
         </a>
+        <a href="https://grafana.ariffzakaria.dev" target="_blank" class="bg-orange-500 hover:bg-orange-400 text-slate-950 font-semibold text-xs px-4 py-2.5 rounded-lg transition">
+          📈 Grafana ↗
+        </a>
         <a href="https://lab.ariffzakaria.dev" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs px-3.5 py-2.5 rounded-lg transition">
           🌍 Public View ↗
         </a>
@@ -196,8 +199,14 @@
           'openrvm_ngrok': { role: 'Ngrok Agent (4040/tcp)', label: 'Fallback Tunnel', url: 'https://mumbling-lubricate-oat.ngrok-free.dev/?portal=admin' },
           'nginx-web': { role: 'NGINX VHosts (127.0.0.1:80)', label: 'Raw /telemetry.json', url: '/telemetry.json' },
           'pihole': { role: 'Pi-hole v6 DNS (:53 & :8080)', label: 'Open Pi-hole Admin', url: 'https://pihole.ariffzakaria.dev/admin' },
-          'uptime-kuma': { role: 'Uptime Kuma v2 (:3001)', label: 'Open Uptime Kuma', url: 'https://kuma.ariffzakaria.dev' }
+          'uptime-kuma': { role: 'Uptime Kuma v2 (:3001)', label: 'Open Uptime Kuma', url: 'https://kuma.ariffzakaria.dev' },
+          'grafana': { role: 'Grafana Observability (127.0.0.1:3000)', label: 'Open Grafana', url: 'https://grafana.ariffzakaria.dev' },
+          'prometheus': { role: 'Prometheus TSDB (:9090)', label: 'Internal', url: '' },
+          'node-exporter': { role: 'Node Exporter (:9100)', label: 'Internal', url: '' }
         };
+        <a href="https://grafana.ariffzakaria.dev" target="_blank" class="bg-orange-500 hover:bg-orange-400 text-slate-950 font-semibold text-xs px-4 py-2.5 rounded-lg transition">
+          📈 Grafana ↗
+        </a>
         const getMeta = (name) => meta[name] || { role: 'Docker Service', label: 'Internal', url: '' };
 
         const telemetry = ref({

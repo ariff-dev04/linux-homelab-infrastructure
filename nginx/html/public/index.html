@@ -169,7 +169,7 @@
             </div>
             <h3 class="text-xl font-bold text-white mt-3">🛡️ Bare-Metal Linux Homelab</h3>
             <p class="text-slate-400 text-sm mt-2">
-              Ubuntu Server 24.04 LTS hosting Pi-hole v6 DNS sinkhole, NGINX Alpine, Uptime Kuma v2 observability, TLP dynamic scaling, and automated cron DR backups.
+              Ubuntu Server 26.04.1 LTS hosting Pi-hole v6 DNS, NGINX Alpine, Prometheus + Grafana + Uptime Kuma v2 observability, Fail2ban, TLP scaling, and automated cron DR backups.
             </p>
           </div>
           <div class="mt-6 pt-4 border-t border-slate-800 flex flex-wrap gap-2">
@@ -246,7 +246,10 @@
           'openrvm_ngrok': 'Ngrok Fallback Ingress Agent',
           'nginx-web': 'Homelab Telemetry & Web Server',
           'pihole': 'Pi-hole v6 DNS Sinkhole',
-          'uptime-kuma': 'Uptime Kuma v2 L3/L7 Monitor'
+          'uptime-kuma': 'Uptime Kuma v2 L3/L7 Monitor',
+          'prometheus': 'Prometheus TSDB Metrics Engine',
+          'grafana': 'Grafana Observability Dashboard',
+          'node-exporter': 'Linux Kernel Metrics Exporter'
         };
         const getRole = (name) => roles[name] || 'Docker Microservice';
 
