@@ -1,30 +1,49 @@
 # Enterprise Linux Homelab Infrastructure
 
-Bare-metal Ubuntu Server 24.04 LTS homelab deploying containerized network and infrastructure services via Docker Compose.
+Bare-metal **Ubuntu Server 26.04.1 LTS** (`homelab-svr` / Dell Latitude E6330) homelab deploying containerized network, observability, and application stacks via Docker Compose, secured behind Zero-Trust Cloudflare Tunnels.
 
-## Phase 2.1: Local DNS & Network Sinkhole (Pi-hole v6)
-- **Service:** Pi-hole DNS Sinkhole (`pihole/pihole:latest`)
-- **Ports:** `53/tcp`, `53/udp` (DNS), `8080/tcp` (Web Admin UI)
-- **Key Engineering & Troubleshooting Steps:**
-  1. Diagnosed local port 53 binding conflict (`systemd-resolved` stub listener) using `ss -tulnp`.
-  2. Configured a drop-in systemd resolver override (`/etc/systemd/resolved.conf.d/pihole.conf`) to disable `DNSStubListener` while preserving upstream resolution.
-  3. Migrated Docker Compose configuration to Pi-hole v6 `FTLCONF_` environment variables (`FTLCONF_dns_listeningMode=all`) to permit LAN bridge queries.
-  4. Secured sensitive credentials using isolated `.env` files (`chmod 600`) excluded via `.gitignore`.
+## Architecture Overview
 
-## Phase 2.2: NGINX Web Server (`nginx:alpine`)
-- **Service:** Lightweight Alpine-based NGINX HTTP server hosting custom portfolio & homelab dashboard.
-- **Ports:** `80/tcp` (HTTP)
-- **Security:** Configured container volume bind-mount with `:ro` (Read-Only) flag to prevent container-to-host file tampering.
+```mermaid
+flowchart TD
+    EXT["External Users / Admin"] -->|"HTTPS 443 + Cloudflare Access"| CF["Cloudflare Tunnel (openrvm_tunnel)"]
+    LAN["LAN Clients (192.168.1.0/24)"] -->|"22/tcp SSH, 53/tcp+udp DNS"| UFW["UFW Firewall (Default Deny)"]
+    CF -->|"Docker Internal:80"| NGINX["NGINX Alpine (127.0.0.1:80)"]
+    CF -->|"Docker Internal:80"| PIHOLE["Pi-hole v6 (127.0.0.1:8080)"]
+    CF -->|"Docker Internal:3001"| KUMA["Uptime Kuma v2 (127.0.0.1:3001)"]
+    CF -->|"Docker Internal:3000"| GRAF["Grafana (127.0.0.1:3000)"]
+    PROM["Prometheus (:9090)"] -->|"Scrapes :9100"| NE["node-exporter"]
+    GRAF -->|"PromQL"| PROM
+    BAK["scripts/backup.sh (cron 20:00 MYT)"] -->|"rclone sync (3-2-1 DR)"| GD["Google Drive"]
+Phase 2.1: Local DNS & Network Sinkhole (Pi-hole v6)
+Service: Pi-hole DNS Sinkhole (pihole/pihole:latest)
 
-## Phase 2.3: Enterprise Service & Network Monitoring (`uptime-kuma:2`)
-- **Service:** Uptime Kuma v2 monitoring HTTP, DNS, ICMP latency, and Docker container states.
-- **Ports:** `3001/tcp` (Web Dashboard)
-- **Integration:** Mounted `/var/run/docker.sock:ro` for read-only container health inspection and configured custom local DNS A-records (`ariff.lab`, `status.ariff.lab`) in Pi-hole.
+Ports: 53/tcp, 53/udp (LAN DNS), 127.0.0.1:8080/tcp (Loopback Web UI via Cloudflare Access)
 
-## Phase 3.1: Host Security Hardening (UFW & OpenSSH)
-- **Firewall (`ufw`):** Enforced default-deny ingress policy allowing only active service ports (`22`, `53`, `80`, `8080`, `3001`).
-- **SSH Hardening:** Configured `ed25519` key-based authentication and disabled root/password logins via `/etc/ssh/sshd_config.d/01-homelab-hardening.conf` (overriding `50-cloud-init.conf` first-match precedence).
+Key Engineering Steps:
+Resolved port 53 binding conflict (systemd-resolved stub listener) via /etc/systemd/resolved.conf.d/pihole.conf.
 
-## Phase 3.2: Automated Disaster Recovery Backups (`scripts/backup.sh`)
-- **Automation:** Engineered a defensive Bash script (`set -euo pipefail`) utilizing `tar -czf` to snapshot all Docker Compose manifests, `.env` secrets, and persistent container volumes (`etc-pihole`, `uptime-kuma-data`).
-- **Security & Retention:** Enforced `chmod 600` archive permissions, audit logging (`backup.log`), and an automated 7-day rolling retention policy via `find -mtime +7 -delete`.
+Configured FTLCONF_dns_listeningMode=all and isolated secrets in .env (chmod 600).
+
+Phase 2.2: Zero-Trust Ingress & Web Portals (nginx:alpine + cloudflared)
+Service: Loopback-only NGINX (127.0.0.1:80) with :ro volume mounts, fronted by Cloudflare Tunnel (openrvm_tunnel).
+
+Portals: Public portfolio (ariffzakaria.dev), Public NOC (lab.ariffzakaria.dev), and Zero-Trust Admin Console (admin.ariffzakaria.dev).
+
+Phase 2.3: Full-Stack Observability (uptime-kuma:2, node_exporter, prometheus, grafana)
+Availability: Uptime Kuma v2 (127.0.0.1:3001) monitoring HTTP, DNS, ICMP, and Docker states (/var/run/docker.sock:ro).
+
+Metrics & Dashboards: node_exporter (:9100) → Prometheus (:9090, 15d TSDB retention) → Grafana (127.0.0.1:3000, Dashboard 1860).
+
+Phase 3.1: Host Security Hardening (UFW, OpenSSH, Fail2ban, Unattended Upgrades)
+Firewall (ufw): Default-deny ingress allowing only 22/tcp (SSH) and 53/tcp+udp (DNS). All web UIs (80, 3000, 3001, 8080) are bound to 127.0.0.1 and accessed via Cloudflare Tunnel + Access.
+
+SSH & Intrusion Prevention: ed25519 key-only SSH (/etc/ssh/sshd_config.d/01-homelab-hardening.conf), fail2ban (sshd jail with systemd backend), and unattended-upgrades for automated security patching.
+
+Phase 3.2: 3-2-1 Disaster Recovery & Self-Healing (scripts/backup.sh + rclone)
+Automation: Daily cron Bash script (set -euo pipefail) creating chmod 600 .tar.gz archives with 7-day rolling retention and off-site rclone sync to Google Drive (drive:homelab-backups).
+
+Self-Healing: systemd L3 network watchdog (homelab-net-watchdog.service/.timer) and TLP power tuning (configs/tlp/01-headless-server.conf).
+
+Phase 4.1: Application Hosting & CI/CD
+Stacks: openrvm-cloud (Vue 3, FastAPI, PostgreSQL 16, Redis 7) and chargetrail-v2 (Flutter/Web, FastAPI) with a self-hosted GitHub Actions runner.
