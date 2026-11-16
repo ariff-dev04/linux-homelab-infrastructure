@@ -35,3 +35,8 @@ echo "[$(date +'%Y-%m-%d %H:%M:%S')] SUCCESS: Created ${ARCHIVE_NAME} (Size: ${B
 # 6. Enforce 7-Day Rolling Retention Policy (Delete archives older than 7 days)
 find "${BACKUP_DIR}" -name "homelab-backup-*.tar.gz" -type f -mtime +${RETENTION_DAYS} -delete
 echo "[$(date +'%Y-%m-%d %H:%M:%S')] INFO: Retention cleanup complete (kept last ${RETENTION_DAYS} days)." | tee -a "${LOG_FILE}"
+
+# 7. Off-Site Sync to Google Drive (3-2-1 DR Strategy)
+echo "[$(date +'%Y-%m-%d %H:%M:%S')] INFO: Syncing backups off-site to drive:homelab-backups..." | tee -a "${LOG_FILE}"
+rclone sync "${BACKUP_DIR}" "drive:homelab-backups" --log-file="${LOG_FILE}" --log-level=INFO
+echo "[$(date +'%Y-%m-%d %H:%M:%S')] SUCCESS: Off-site rclone sync complete." | tee -a "${LOG_FILE}"
