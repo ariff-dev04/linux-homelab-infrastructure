@@ -1,0 +1,22 @@
+services:
+  vaultwarden:
+    container_name: vaultwarden
+    image: vaultwarden/server:latest
+    env_file:
+      - .env
+    environment:
+      - DOMAIN=https://vault.ariffzakaria.dev
+      - SIGNUPS_ALLOWED=false
+      - WEBSOCKET_ENABLED=true
+    ports:
+      - "127.0.0.1:8088:80/tcp"
+    volumes:
+      - ./vw-data:/data
+    networks:
+      - default
+      - homelab_ingress
+    restart: unless-stopped
+
+networks:
+  homelab_ingress:
+    external: true
