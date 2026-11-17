@@ -57,8 +57,15 @@
           🛡️ Pi-hole Admin ↗
         </a>
         <a href="https://grafana.ariffzakaria.dev" target="_blank" class="bg-orange-500 hover:bg-orange-400 text-slate-950 font-semibold text-xs px-4 py-2.5 rounded-lg transition">
-       📈 Grafana ↗
+          📈 Grafana ↗
         </a>
+        <a href="https://vault.ariffzakaria.dev" target="_blank" class="bg-blue-500 hover:bg-blue-400 text-slate-950 font-semibold text-xs px-4 py-2.5 rounded-lg transition">
+          🔐 Vaultwarden ↗
+        </a>
+        <a href="https://cloud.ariffzakaria.dev" target="_blank" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs px-4 py-2.5 rounded-lg transition">
+          ☁️ Nextcloud ↗
+        </a>
+
         <a href="https://lab.ariffzakaria.dev" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs px-3.5 py-2.5 rounded-lg transition">
           🌍 Public View ↗
         </a>
@@ -203,7 +210,10 @@
           'uptime-kuma': { role: 'Uptime Kuma v2 (:3001)', label: 'Open Uptime Kuma', url: 'https://kuma.ariffzakaria.dev' },
           'grafana': { role: 'Grafana Observability (127.0.0.1:3000)', label: 'Open Grafana', url: 'https://grafana.ariffzakaria.dev' },
           'prometheus': { role: 'Prometheus TSDB (:9090)', label: 'Internal', url: '' },
-          'node-exporter': { role: 'Node Exporter (:9100)', label: 'Internal', url: '' }
+          'node-exporter': { role: 'Node Exporter (:9100)', label: 'Internal', url: '' },
+          'vaultwarden': { role: 'Vaultwarden Password Manager (127.0.0.1:8088)', label: 'Open Vaultwarden', url: 'https://vault.ariffzakaria.dev' },
+          'nextcloud': { role: 'Nextcloud Family Cloud (127.0.0.1:8089)', label: 'Open Nextcloud', url: 'https://cloud.ariffzakaria.dev' },
+          'nextcloud_db': { role: 'PostgreSQL 16 (5432/tcp internal)', label: 'nextcloud_default bridge', url: '' }
 
         };
         const getMeta = (name) => meta[name] || { role: 'Docker Service', label: 'Internal', url: '' };
