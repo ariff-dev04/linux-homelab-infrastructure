@@ -10,15 +10,24 @@ services:
       - default
     restart: unless-stopped
 
+  nextcloud-redis:
+    container_name: nextcloud_redis
+    image: redis:7-alpine
+    networks:
+      - default
+    restart: unless-stopped
+
   nextcloud:
     container_name: nextcloud
     image: nextcloud:latest
     depends_on:
       - nextcloud-db
+      - nextcloud-redis
     env_file:
       - .env
     environment:
       - POSTGRES_HOST=nextcloud-db
+      - REDIS_HOST=nextcloud-redis
       - NEXTCLOUD_TRUSTED_DOMAINS=cloud.ariffzakaria.dev localhost 127.0.0.1
       - OVERWRITEPROTOCOL=https
     ports:
@@ -28,6 +37,19 @@ services:
     networks:
       - default
       - homelab_ingress
+    restart: unless-stopped
+
+  nextcloud-cron:
+    container_name: nextcloud_cron
+    image: nextcloud:latest
+    entrypoint: /cron.sh
+    depends_on:
+      - nextcloud-db
+      - nextcloud-redis
+    volumes:
+      - ./nc-data:/var/www/html
+    networks:
+      - default
     restart: unless-stopped
 
 networks:
