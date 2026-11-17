@@ -1,0 +1,35 @@
+services:
+  nextcloud-db:
+    container_name: nextcloud_db
+    image: postgres:16-alpine
+    env_file:
+      - .env
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    networks:
+      - default
+    restart: unless-stopped
+
+  nextcloud:
+    container_name: nextcloud
+    image: nextcloud:latest
+    depends_on:
+      - nextcloud-db
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=nextcloud-db
+      - NEXTCLOUD_TRUSTED_DOMAINS=cloud.ariffzakaria.dev localhost 127.0.0.1
+      - OVERWRITEPROTOCOL=https
+    ports:
+      - "127.0.0.1:8089:80/tcp"
+    volumes:
+      - ./nc-data:/var/www/html
+    networks:
+      - default
+      - homelab_ingress
+    restart: unless-stopped
+
+networks:
+  homelab_ingress:
+    external: true
