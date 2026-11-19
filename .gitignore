@@ -8,3 +8,21 @@
 *.db
 *.log
 nginx/html/public/telemetry.json
+# --- Stateful Docker Bind-Mount Volumes (NEVER commit to Git) ---
+**/db-data/
+**/nc-data/
+**/vw-data/
+**/redis-data/
+**/kuma-data/
+*-data/
+
+# --- Secrets, Keys & Database Dumps ---
+.env
+*.env
+!*.env.example
+*.pem
+*.key
+*.sqlite3
+*.sqlite3-*
+*.sql
+*.tar.gz
